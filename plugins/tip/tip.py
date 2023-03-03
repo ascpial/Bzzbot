@@ -12,15 +12,46 @@ from discord import app_commands
 from discord.ext import tasks, commands
 from utils import Gunibot, MyContext
 
+from .months import MOIS
+
 async def setup(bot:Gunibot):
     await bot.add_cog(Tips(bot), icon='🐝')
 
 bot_color = 0xfdc800
 
+NOMS_MOIS = [
+    'Janvier',
+    'Février',
+    'Mars',
+    'Avril',
+    'Mai',
+    'Juin',
+    'Juillet',
+    'Août',
+    'Septembre',
+    'Octobre',
+    'Novembre',
+    'Décembre',
+]
+
 class Tips(commands.Cog):
     def __init__(self, bot: Gunibot):
         self.bot = bot
         self.file = "tip"
+    
+    def get_embed(self, mois: int) -> discord.Embed:
+        data = MOIS[mois-1]
+        
+        embed = discord.Embed(
+            color=0xdcba2a,
+            title=f"Que faire au Rucher en {NOMS_MOIS[mois-1]} ?",
+            description=f"Voici quelques conseils :\n{data['text']}",
+            url=data['url'],
+        )
+        embed.set_footer(text="Clique sur le titre pour en savoir plus !")
+        embed.set_image(url=data['image'])
+
+        return embed
 
     @app_commands.command(
         name='calendrier',
@@ -53,6 +84,4 @@ class Tips(commands.Cog):
         if mois is None:
             mois = datetime.datetime.now().month
 
-        await inter.response.send_message(
-            str(mois)
-        )
+        await inter.response.send_message(embeds=[self.get_embed(mois)])
