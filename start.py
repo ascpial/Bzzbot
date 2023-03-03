@@ -119,6 +119,7 @@ def main():
         print(
             "--------------------------------------------------------------------------------"
         )
+        await client.tree.sync()
         await client.change_presence(
             status=discord.Status.online,
         )
