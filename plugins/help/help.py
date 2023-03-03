@@ -89,7 +89,7 @@ class Help(commands.HelpCommand):
         """
 
         # load the config options
-        color = self.context.bot.server_configs[self.context.guild.id].get("help_embed_color", 0)
+        color = 0xDCBA2A
         author = self.context.bot.server_configs[self.context.guild.id].get("help_author").format(
             user=self.context.bot.user
         )
@@ -404,6 +404,24 @@ class Help(commands.HelpCommand):
                 max_lenght = max(max_lenght, len(command.name) + len(command.short_doc))
 
         embeds = []
+
+        info_embed = await self.get_help_embed()
+        author = self.context.bot.server_configs[self.context.guild.id].get("help_author").format(
+            user=self.context.bot.user
+        )
+        icon_url = self.context.bot.server_configs[self.context.guild.id].get("help_author_icon_url").format(
+            user=self.context.bot.user
+        )
+        info_embed.set_author(name=author, icon_url=icon_url)
+        info_embed.set_footer(text=None)
+        info_embed.set_image(
+            url='https://media.discordapp.net/attachments/1013758012051165187/1081349077360443523/banner.JPG'
+        )
+        info_embed.title = "Ce bot est l'utilitaire du serveur Les Api's."
+        info_embed.description = """Il gère l'expérience et bien plus !"""
+        
+        embeds.append(info_embed)
+
         to_iterate = itertools.groupby(filtered, key=get_category)
         for category, commands_ in to_iterate:
             commands_ = sorted(commands_, key=lambda c: c.name)
