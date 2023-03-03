@@ -79,35 +79,6 @@ class Misc(commands.Cog):
             pass
 
     #➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
-    # 🖥️ Hoster
-    #➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
-
-    @commands.command(name="hoster", aliases=["host","mtxserv","mtx","🖥️","💻"])
-    @commands.guild_only()
-    async def hoster(self, ctx: MyContext):
-        """Give all informations about the hoster.
-        Usage:
-        - Get information about the hoster: hoster"""
-
-        # Building the result message
-        embed = discord.Embed(colour=discord.Colour.blue())
-        embed.add_field(
-            name="mTx Serv",
-            value=await self.bot._(ctx.guild.id, "misc.hoster.info")
-        )
-        embed.set_thumbnail(url="http://gunivers.net/wp-content/uploads/2021/07/Logo-mTxServ.png")
-
-        # Building the webhook that will take the appearance off the hoster
-        webhook: discord.Webhook = await ctx.channel.create_webhook(name="mTx Serv")
-        await webhook.send(
-            embed=embed,
-            avatar_url="http://gunivers.net/wp-content/uploads/2021/07/Logo-mTxServ.png",
-        )
-
-        # Cleaning the webhook
-        await webhook.delete()
-
-    #➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
     # 🪙 Flip a coin
     #➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 
