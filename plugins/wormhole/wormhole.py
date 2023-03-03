@@ -485,6 +485,7 @@ class Wormholes(commands.Cog):
 
     @commands.group(name="wormhole", aliases=["wh"])
     @commands.guild_only()
+    @commands.check(checks.is_server_manager)
     @commands.cooldown(2, 15, commands.BucketType.channel)
     async def wormhole(self, ctx: MyContext):
         """Connect 2 points through space-time (or 2 text channels if you prefer)"""

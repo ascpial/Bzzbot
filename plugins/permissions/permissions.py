@@ -32,6 +32,9 @@ class Perms(commands.Cog):
 
     @commands.command(name="perms", aliases=["permissions"])
     @commands.guild_only()
+    @commands.has_permissions(
+        manage_roles=True,
+    )
     async def check_permissions(
         self,
         ctx: MyContext,

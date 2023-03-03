@@ -197,6 +197,9 @@ class Giveaways(commands.Cog):
         return None
 
     @commands.group(aliases=["gaw", "giveaways"])
+    @commands.has_permissions(
+        manage_guild=True,
+    )
     async def giveaway(self, ctx: MyContext):
         """Start or stop giveaways."""
         if ctx.subcommand_passed is None:

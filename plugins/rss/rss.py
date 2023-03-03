@@ -183,6 +183,7 @@ class Rss(commands.Cog):
         return await self.bot.get_cog("Languages").get_lang(guildID, True)
 
     @commands.group(name="rss")
+    @commands.has_permissions(manage_webhooks=True)
     @commands.cooldown(2, 15, commands.BucketType.channel)
     async def rss_main(self, ctx: MyContext):
         """See the last post of a rss feed"""
