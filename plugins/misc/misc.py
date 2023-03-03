@@ -39,11 +39,7 @@ class Misc(commands.Cog):
     @commands.command(name="cookie", aliases=["🍪"])
     @commands.guild_only()
     async def cookie(self, ctx: MyContext, *, user: discord.User = None):
-        """The most useful command of the world: give a cookie to yourself or someone else.
-        Usage:
-        - Get a cookie: cookie
-        - Give a cookie to someone: cookie <user>
-          - user: the member you want to give the cookie to. Can be a mention, an id or simply it's name."""
+        """La commande la plus utile du monde : donner un cookie à quelqu'un."""
 
         # If the cookie is given
         if user:
@@ -84,10 +80,7 @@ class Misc(commands.Cog):
 
     @commands.command(name="flipacoin", aliases=["fc","coin","🪙"])
     async def flip(self, ctx: MyContext):
-        """Flip a coin.
-        Usage:
-        - Flip a coin: coin
-        """
+        """Fait un pile ou face"""
 
         a = random.randint(-100, 100)
 
@@ -115,11 +108,9 @@ class Misc(commands.Cog):
 
     @commands.command(name="rolladice", aliases=["rad","dice","🎲"])
     async def rolladice(self, ctx: MyContext, *, dice:int = 6):
-        """Roll a dice.
-        Usage:
-        - Throw a classic dice: dice
-        - Throw a custom dice: dice <number>
-          - number: allow to set the random number generation from 1 and `number`. Default: 6
+        """Lance un dé
+
+        Il est possible de spécifier le nombre de face de ce dé.
         """
 
         # Test if the parameter is an integer
@@ -161,9 +152,7 @@ class Misc(commands.Cog):
 
     @commands.command(name="dataja", aliases=["data", "ask", "❓"])
     async def dataja(self, ctx: MyContext):
-        """Don't ask to ask, just ask.
-        Usage:
-        - Explain how to ask something: dataja"""
+        """Ne demande pas si tu peux demander, demande juste"""
 
         embed = discord.Embed(
             title=await self.bot._(ctx.guild.id, "misc.dataja.title"),
@@ -186,10 +175,7 @@ class Misc(commands.Cog):
 
     @commands.command(name="kill", aliases=["🗡️"])
     async def kill(self, ctx: MyContext, *, target: str = None):
-        """Wanna kill someone? Take a breath
-        Usage:
-        - kill someone: kill <user>
-          - user: the guy you want to kill. It can be a mention, an ID or simply a name."""
+        """Tu veux tuer quelqu'un  ? Respire un coup."""
 
         # Suicide
         if target is None:
@@ -237,9 +223,7 @@ class Misc(commands.Cog):
 
     @commands.group(name="timestamp")
     async def timestamp(self, ctx: MyContext):
-        """This command helps you to use the discord timestamp feature.
-        Use the timestamp command to see more !
-        """
+        """Affiche des dates directement dans Discord"""
         if not ctx.subcommand_passed:
             await ctx.author.send(await self.bot._(ctx, "misc.timestamp.help"))
 

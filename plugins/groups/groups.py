@@ -219,8 +219,7 @@ class Groups(commands.Cog):
     @commands.group(name="group", aliases=["groups"])
     @commands.guild_only()
     async def group_main(self, ctx: MyContext):
-        """Manage your groups
-        """
+        """Gère tes groupes"""
         if ctx.subcommand_passed is None:
             await ctx.send_help("group")
             return
@@ -229,10 +228,9 @@ class Groups(commands.Cog):
     @commands.check(checks.can_group)
     @commands.cooldown(1, 15, commands.BucketType.guild)
     async def group_add(self, ctx: MyContext, name: str):
-        """Create a new group
-        The name is only one word, no space allowed
-
-        Example: group add cool-guys"""
+        """Créer un nouveau groupe
+        
+        Les espaces ne sont pas autorisés dans le nom."""
         # remove spaces if needed
         name = name.replace(" ", "-")
         # check if the role exists
@@ -271,8 +269,7 @@ class Groups(commands.Cog):
     @group_main.command(name="remove")
     @commands.check(checks.can_group)
     async def group_remove(self, ctx: MyContext, group: GroupConverter):
-        """Delete a group
-        Use its name, role ID or mention"""
+        """Supprimes un groupe"""
         # if user is not the group owner and neither a server admin, we abort
         if (
             group.ownerID != ctx.author.id
@@ -310,8 +307,7 @@ class Groups(commands.Cog):
     @group_main.command(name="register")
     @commands.check(checks.is_admin)
     async def group_register(self, ctx: MyContext, role: discord.Role):
-        """Register a group from an existing role
-        Use the ID, name or mention of the role you want to add to the group system"""
+        """Enregistre un groupe à partir d'un rôle"""
         roleName = role.name
         roleID = role.id
         self.db_add_groups(ctx.guild.id, roleID, ctx.author.id, 1)
@@ -323,8 +319,7 @@ class Groups(commands.Cog):
     @group_main.command(name="unregister")
     @commands.check(checks.is_admin)
     async def group_unregister(self, ctx: MyContext, group: GroupConverter):
-        """Unregister a group without deleting the role
-        Use his ID, name or mention"""
+        """Oublie un groupe sans supprimer le rôle lié"""
         roleID = group.roleID
         deleted = self.db_delete_group(ctx.guild.id, roleID)
         if deleted:  # deletion confirmed
@@ -339,7 +334,7 @@ class Groups(commands.Cog):
 
     @group_main.group(name="modify", aliases=["edit"])
     async def group_modify_main(self, ctx: MyContext):
-        """Edit your groups"""
+        """Modifie tes groupes"""
         if ctx.subcommand_passed is None:
             await ctx.send_help("group modify")
 
@@ -348,7 +343,7 @@ class Groups(commands.Cog):
     async def group_modify_owner(
         self, ctx: MyContext, group: GroupConverter, user: discord.Member
     ):
-        """Edit the owner of a group"""
+        """Modifie le propriétaire du groupe"""
         # if user is not the group owner and neither a server admin, we abort
         if (
             group.ownerID != ctx.author.id
@@ -408,7 +403,7 @@ class Groups(commands.Cog):
     @group_modify_main.command(name="name")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def group_modify_name(self, ctx: MyContext, group: GroupConverter, name):
-        """Edit the name of a group"""
+        """Modifie le nom d'un groupe"""
         if (
             group.ownerID != ctx.author.id
             and not ctx.author.guild_permissions.administrator
@@ -432,10 +427,9 @@ class Groups(commands.Cog):
     async def group_modify_privacy(
         self, ctx: MyContext, group: GroupConverter, privacy: str
     ):
-        """Edit the privacy of a group
-        Privacy parameter needs to be either 'private' or 'public'
-
-        Example: group modify privacy CoolGuys private"""
+        """Modifie la visibilité d'un groupe
+        
+        La visibilité peut être 'private' ou 'public'"""
         # if user is nor group owner nor server admin, we abort
         if (
             group.ownerID != ctx.author.id
@@ -465,7 +459,7 @@ class Groups(commands.Cog):
     @group_main.command(name="list")
     @commands.cooldown(1, 10, commands.BucketType.guild)
     async def group_list(self, ctx: MyContext):
-        """List server's groups"""
+        """Liste les groupes de ce serveur"""
         groups = self.db_get_config(ctx.guild.id)
         if not groups:  # we can't list an empty list
             await ctx.send(
@@ -485,7 +479,7 @@ class Groups(commands.Cog):
     @group_main.command(name="join")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def group_join(self, ctx: MyContext, group: GroupConverter):
-        """Join a group"""
+        """Rejoint un groupe"""
         if group.privacy is None:  # group doesn't exist
             await ctx.send(await self.bot._(ctx.guild.id, "groups.error.no-exist"))
             return
@@ -506,7 +500,7 @@ class Groups(commands.Cog):
     @group_main.command(name="leave")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def group_leave(self, ctx: MyContext, group: GroupConverter):
-        """Leave a group"""
+        """Quitte un groupe"""
         # the owner cannot leave its own group
         if group.ownerID == ctx.author.id:
             await ctx.send(await self.bot._(ctx.guild.id, "groups.error.owner"))
@@ -525,14 +519,14 @@ class Groups(commands.Cog):
     @group_main.group(name="admin", aliases=["manage"])
     @commands.cooldown(1, 10, commands.BucketType.guild)
     async def group_admin_main(self, ctx: MyContext):
-        """Manage the users in your group"""
+        """Gère les utilisateurs d'un groupe"""
         if ctx.subcommand_passed is None:
             await ctx.send_help("group admin")
 
     @group_admin_main.command(name="list")
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def group_admin_list(self, ctx: MyContext, group: GroupConverter):
-        """Give the userlist of your group"""
+        """Retourne la liste des membres d'un groupe"""
         # if user is not the group owner and neither a server admin, we abort
         if (
             group.ownerID != ctx.author.id
@@ -556,8 +550,7 @@ class Groups(commands.Cog):
     async def group_admin_add(
         self, ctx: MyContext, group: GroupConverter, user: discord.Member
     ):
-        """Add a user to a group (by force)
-        Use that if the group is set to private"""
+        """Ajoute un utilisateur au groupe (en faisant usage de la force)"""
         # if user is not the group owner and neither a server admin, we abort
         if (
             group.ownerID != ctx.author.id
@@ -586,7 +579,7 @@ class Groups(commands.Cog):
     async def group_admin_remove(
         self, ctx: MyContext, group: GroupConverter, user: discord.Member
     ):
-        """Remove a user to a group (by force)"""
+        """Retire un utilisateur d'un group (en faisant usage de la force)"""
         # if user is not the group owner and neither a server admin, we abort
         if (
             group.ownerID != ctx.author.id
@@ -610,14 +603,14 @@ class Groups(commands.Cog):
 
     @group_main.group(name="channel")
     async def group_channel_main(self, ctx: MyContext):
-        """Manage your groups channels"""
+        """Gère les salons liés au groupe"""
         if ctx.subcommand_passed is None:
             await ctx.send_help("group channel")
 
     @group_channel_main.command(name="remove")
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def group_channel_remove(self, ctx: MyContext, group: GroupConverter):
-        """Remove a group channel"""
+        """Retour un groupe de salon"""
         # if user is not the group owner and neither a server admin, we abort
         if (
             group.ownerID != ctx.author.id
@@ -650,8 +643,7 @@ class Groups(commands.Cog):
     @group_channel_main.command(name="add")
     @commands.cooldown(1, 30, commands.BucketType.user)
     async def group_channel_add(self, ctx: MyContext, group: GroupConverter, name=None):
-        """Create a private channel for you group
-        Provide a channel name if you want to set it differently than the group name"""
+        """Créé un salon privé lié à un groupe"""
         if not name:
             name = group.role(self.bot).name
         # if user is not the group owner and neither a server admin, we abort
@@ -701,8 +693,7 @@ class Groups(commands.Cog):
     async def group_channel_register(
         self, ctx: MyContext, group: GroupConverter, channel: discord.TextChannel
     ):
-        """Register a channel as a group channel
-        You'll have to edit the permissions yourself :/"""
+        """Lie un salon à un groupe"""
         # if a channel already exists for that group
         if group.channelID and group.channel(self.bot):
             await ctx.send(await self.bot._(ctx.guild.id, "groups.error.channel-exist"))
@@ -719,8 +710,7 @@ class Groups(commands.Cog):
     @commands.check(checks.is_admin)
     @commands.cooldown(1, 30, commands.BucketType.guild)
     async def group_channel_unregister(self, ctx: MyContext, group: GroupConverter):
-        """Unregister a channel as a group channel
-        This action will not delete the channel!"""
+        """Délie un salon d'un groupe"""
         # if no channel can be found
         if not (group.channelID and group.channel(self.bot)):
             await ctx.send(await self.bot._(ctx.guild.id, "groups.error.no-channel"))

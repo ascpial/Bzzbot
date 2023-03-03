@@ -48,7 +48,9 @@ class General(commands.Cog):
         self.codelines = count
 
     @commands.command(name="hs")
+    @commands.has_permissions(manage_messages=True)
     async def hs(self, ctx: MyContext, channel: CHANNEL_TYPES = None):
+        """Indique que le discussion n'est pas à sa bonne place"""
         if channel:
             msg = await self.bot._(
                 ctx.channel,
@@ -68,7 +70,7 @@ class General(commands.Cog):
 
     @commands.command(name="ping")
     async def rep(self, ctx: MyContext):
-        """Get bot latency"""
+        """Affiche la latence du bot"""
         m = await ctx.send("Ping...")
         t = (m.created_at - ctx.message.created_at).total_seconds()
         try:
@@ -84,7 +86,7 @@ class General(commands.Cog):
     @commands.command(name="stats")
     @commands.cooldown(2, 60, commands.BucketType.guild)
     async def stats(self, ctx: MyContext):
-        """Display some statistics about the bot"""
+        """Affiche quelques statistiques à propos du bot"""
         v = sys.version_info
         version = str(v.major) + "." + str(v.minor) + "." + str(v.micro)
         pid = os.getpid()

@@ -578,8 +578,7 @@ class XP(commands.Cog):
     @commands.bot_has_permissions(send_messages=True)
     @commands.cooldown(3, 10, commands.BucketType.user)
     async def rank(self, ctx: MyContext, *, user: discord.User = None):
-        """Display a user XP.
-        If you don't target any user, I'll display your own XP"""
+        """Affiche ton niveau ou celui de quelqu'un d'autre"""
         if user is None:
             user = ctx.author
         # if user is a bot
@@ -648,8 +647,7 @@ class XP(commands.Cog):
     @commands.bot_has_permissions(send_messages=True)
     @commands.cooldown(5, 60, commands.BucketType.user)
     async def top(self, ctx: MyContext, page: typing.Optional[int] = 1):
-        """Get the list of the highest levels
-        Each page has 20 users"""
+        """Affiche le classement du serveur"""
         # if xp is disabled
         if not self.bot.server_configs[ctx.guild.id]["enable_xp"]:
             return await ctx.send(await self.bot._(ctx.guild.id, "xp.xp-disabled"))
