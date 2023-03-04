@@ -1,0 +1,10 @@
+# Ce programme est régi par la licence CeCILL soumise au droit français et
+# respectant les principes de diffusion des logiciels libres. Vous pouvez
+# utiliser, modifier et/ou redistribuer ce programme sous les conditions
+# de la licence CeCILL diffusée sur le site "http://www.cecill.info".
+
+en:
+  discohook:
+    open-link: "Open the link and copy the following value in the `Webhook URL` field:"
+    edit-link: "Put this link in the field `Message Link` at the bottom to edit the message:"
+    cannot-edit: It seems like this message has not been sent by my webhook and cannot be edited.
