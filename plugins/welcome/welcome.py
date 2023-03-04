@@ -5,8 +5,12 @@ utiliser, modifier et/ou redistribuer ce programme sous les conditions
 de la licence CeCILL diffusée sur le site "http://www.cecill.info".
 """
 
+import io
+
+from PIL import Image, ImageDraw, ImageFilter
 import discord
 from discord.ext import commands
+
 from utils import Gunibot, MyContext
 
 
@@ -22,6 +26,37 @@ class Welcome(commands.Cog):
         bot.get_command("config").add_command(self.config_welcome_roles)
         bot.get_command("config").add_command(self.config_welcome_channel)
         bot.get_command("config").add_command(self.config_departure_channel)
+    
+    async def generate_banner(self, member: discord.Member):
+        pos = (271, 69)
+
+        img = Image.open(
+            io.BytesIO(await member.display_avatar.read())
+        ).convert("RGB")
+        img = img.resize(
+            (216, 216),
+        )
+
+        blur_radius = 0
+        offset = 4
+        offset = blur_radius * 2 + offset
+        mask = Image.new("L", img.size, 0)
+        draw = ImageDraw.Draw(mask)
+        draw.ellipse((offset, offset, img.size[0] - offset, img.size[1] - offset), fill=255)
+        mask = mask.filter(ImageFilter.GaussianBlur(blur_radius))
+
+        full_banner = Image.open('plugins/welcome/assets/join_banner.png')
+        full_banner.paste(
+            img,
+            pos,
+            mask=mask,
+        )
+
+        buffer = io.BytesIO()
+        full_banner.save(buffer, format='PNG')
+        buffer.seek(0)
+        return buffer
+        
 
     @commands.command(name="welcome_roles")
     async def config_welcome_roles(
@@ -61,6 +96,16 @@ class Welcome(commands.Cog):
         pos = g.me.top_role.position
         roles = filter(lambda x: (x is not None) and (x.position < pos), roles)
         await member.add_roles(*roles, reason="New members roles")
+    
+    @commands.command()
+    async def test(self, ctx: MyContext):
+        file = discord.File(
+            await self.generate_banner(ctx.author),
+            filename='banner.png',
+        )
+        await ctx.send(
+            file=file
+        )
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -84,10 +129,15 @@ class Welcome(commands.Cog):
                 color=0xdcba2a,
             )
             embed.set_image(
-                url="https://media.discordapp.net/attachments/1013758012051165187/1081349077360443523/banner.JPG"
+                url="attachment://banner.png"
             )
 
-            await channel.send(embed=embed)
+            file = discord.File(await self.generate_banner(member), filename='banner.png')
+
+            await channel.send(
+                embed=embed,
+                file=file,
+            )
 
         if "MEMBER_VERIFICATION_GATE_ENABLED" not in g.features:
             # we give new members roles if the verification gate is disabled
@@ -112,10 +162,15 @@ class Welcome(commands.Cog):
                 color=0xdcba2a,
             )
             embed.set_image(
-                url="https://media.discordapp.net/attachments/1013758012051165187/1081349077360443523/banner.JPG"
+                url="attachment://banner.png"
             )
 
-            await channel.send(embed=embed)
+            file = discord.File(await self.generate_banner(member), filename='banner.png')
+
+            await channel.send(
+                embed=embed,
+                file=file,
+            )
 
 
 config = {}
