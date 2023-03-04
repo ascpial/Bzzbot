@@ -3,5 +3,15 @@
         "default": null,
         "type": "roles",
         "command": "welcome_roles"
+    },
+    "welcome_channel": {
+        "default": null,
+        "type": "channel",
+        "command": "welcome_channel"
+    },
+    "departure_channel": {
+        "default": null,
+        "type": "channel",
+        "command": "departure_channel"
     }
 }

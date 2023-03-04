@@ -13,9 +13,15 @@ from utils import Gunibot, MyContext
 class Welcome(commands.Cog):
     def __init__(self, bot: Gunibot):
         self.bot = bot
-        self.config_options = ["welcome_roles"]
+        self.config_options = [
+            "welcome_roles",
+            "welcome_channel",
+            "departure_channel",
+        ]
 
         bot.get_command("config").add_command(self.config_welcome_roles)
+        bot.get_command("config").add_command(self.config_welcome_channel)
+        bot.get_command("config").add_command(self.config_departure_channel)
 
     @commands.command(name="welcome_roles")
     async def config_welcome_roles(
@@ -27,6 +33,22 @@ class Welcome(commands.Cog):
             roles = [role.id for role in roles]
         await ctx.send(
             await self.bot.sconfig.edit_config(ctx.guild.id, "welcome_roles", roles)
+        )
+    
+    @commands.command(name="welcome_channel")
+    async def config_welcome_channel(
+        self, ctx: MyContext, channel: discord.TextChannel,
+    ):
+        await ctx.send(
+            await self.bot.sconfig.edit_config(ctx.guild.id, "welcome_channel", channel.id)
+        )
+    
+    @commands.command(name="departure_channel")
+    async def config_departure_channel(
+        self, ctx: MyContext, channel: discord.TextChannel,
+    ):
+        await ctx.send(
+            await self.bot.sconfig.edit_config(ctx.guild.id, "departure_channel", channel.id)
         )
 
     async def give_welcome_roles(self, member: discord.Member):
@@ -49,6 +71,24 @@ class Welcome(commands.Cog):
                 f'Module - Welcome: Missing "manage_roles" permission on guild "{g.name}"'
             )
             return
+        
+        welcome_channel = self.bot.server_configs[g.id].get('welcome_channel', None)
+        if welcome_channel is not None:
+            channel = self.bot.get_channel(welcome_channel)
+
+            embed = discord.Embed(
+                title="Une nouvelle abeille a rejoint la ruche !",
+                description=f"""🐝 {member.mention} a rejoint Les Api's ! 🐝
+
+🌷 On espère que tu ne piques pas 🌷""",
+                color=0xdcba2a,
+            )
+            embed.set_image(
+                url="https://media.discordapp.net/attachments/1013758012051165187/1081349077360443523/banner.JPG"
+            )
+
+            await channel.send(embed=embed)
+
         if "MEMBER_VERIFICATION_GATE_ENABLED" not in g.features:
             # we give new members roles if the verification gate is disabled
             await self.give_welcome_roles(member)
@@ -59,6 +99,23 @@ class Welcome(commands.Cog):
         if before.pending and not after.pending:
             if "MEMBER_VERIFICATION_GATE_ENABLED" in after.guild.features:
                 await self.give_welcome_roles(after)
+    
+    @commands.Cog.listener()
+    async def on_member_remove(self, member: discord.Member):
+        departure_channel = self.bot.server_configs[member.guild.id].get('departure_channel', None)
+        if departure_channel is not None:
+            channel = self.bot.get_channel(departure_channel)
+
+            embed = discord.Embed(
+                title="Un membre vient de partir 😢",
+                description=f"🐝 {member.name} a essaimé ! On espère vite le retrouver en haut d'un arbre auprès de sa reine ! 🐝",
+                color=0xdcba2a,
+            )
+            embed.set_image(
+                url="https://media.discordapp.net/attachments/1013758012051165187/1081349077360443523/banner.JPG"
+            )
+
+            await channel.send(embed=embed)
 
 
 config = {}
