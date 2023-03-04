@@ -126,7 +126,7 @@ class Welcome(commands.Cog):
                 description=f"""🐝 {member.mention} a rejoint Les Api's ! 🐝
 
 🌷 On espère que tu ne piques pas 🌷""",
-                color=0xdcba2a,
+                color=0xfdc800,
             )
             embed.set_image(
                 url="attachment://banner.png"
@@ -159,7 +159,7 @@ class Welcome(commands.Cog):
             embed = discord.Embed(
                 title="Un membre vient de partir 😢",
                 description=f"🐝 {member.name} a essaimé ! On espère vite le retrouver en haut d'un arbre auprès de sa reine ! 🐝",
-                color=0xdcba2a,
+                color=0xfdc800,
             )
             embed.set_image(
                 url="attachment://banner.png"

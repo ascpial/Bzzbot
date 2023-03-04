@@ -89,7 +89,7 @@ class Help(commands.HelpCommand):
         """
 
         # load the config options
-        color = 0xDCBA2A
+        color = 0xfdc800
         author = self.context.bot.server_configs[self.context.guild.id].get("help_author").format(
             user=self.context.bot.user
         )

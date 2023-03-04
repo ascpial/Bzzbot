@@ -31,7 +31,7 @@ class XP(commands.Cog):
         self.cache: Dict[Dict[int, int]] = dict()  # xp cache
         self.levels = [0]  # xp required per level
         self.xp_channels_cache = dict()  # no-xp channels
-        self.embed_color = discord.Colour(0xDCBA2A)
+        self.embed_color = discord.Colour(0xfdc800)
         self.config_options = [
             "enable_xp",
             "noxp_channels",
