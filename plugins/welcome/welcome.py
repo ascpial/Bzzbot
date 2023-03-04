@@ -26,7 +26,7 @@ class Welcome(commands.Cog):
         bot.get_command("config").add_command(self.config_welcome_roles)
         bot.get_command("config").add_command(self.config_welcome_channel)
         bot.get_command("config").add_command(self.config_departure_channel)
-    
+
     async def generate_banner(self, member: discord.Member):
         pos = (271, 69)
 
@@ -56,7 +56,6 @@ class Welcome(commands.Cog):
         full_banner.save(buffer, format='PNG')
         buffer.seek(0)
         return buffer
-        
 
     @commands.command(name="welcome_roles")
     async def config_welcome_roles(
@@ -69,7 +68,7 @@ class Welcome(commands.Cog):
         await ctx.send(
             await self.bot.sconfig.edit_config(ctx.guild.id, "welcome_roles", roles)
         )
-    
+
     @commands.command(name="welcome_channel")
     async def config_welcome_channel(
         self, ctx: MyContext, channel: discord.TextChannel,
@@ -77,7 +76,7 @@ class Welcome(commands.Cog):
         await ctx.send(
             await self.bot.sconfig.edit_config(ctx.guild.id, "welcome_channel", channel.id)
         )
-    
+
     @commands.command(name="departure_channel")
     async def config_departure_channel(
         self, ctx: MyContext, channel: discord.TextChannel,
@@ -96,16 +95,6 @@ class Welcome(commands.Cog):
         pos = g.me.top_role.position
         roles = filter(lambda x: (x is not None) and (x.position < pos), roles)
         await member.add_roles(*roles, reason="New members roles")
-    
-    @commands.command()
-    async def test(self, ctx: MyContext):
-        file = discord.File(
-            await self.generate_banner(ctx.author),
-            filename='banner.png',
-        )
-        await ctx.send(
-            file=file
-        )
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -116,7 +105,7 @@ class Welcome(commands.Cog):
                 f'Module - Welcome: Missing "manage_roles" permission on guild "{g.name}"'
             )
             return
-        
+
         welcome_channel = self.bot.server_configs[g.id].get('welcome_channel', None)
         if welcome_channel is not None:
             channel = self.bot.get_channel(welcome_channel)
@@ -149,7 +138,7 @@ class Welcome(commands.Cog):
         if before.pending and not after.pending:
             if "MEMBER_VERIFICATION_GATE_ENABLED" in after.guild.features:
                 await self.give_welcome_roles(after)
-    
+
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
         departure_channel = self.bot.server_configs[member.guild.id].get('departure_channel', None)
