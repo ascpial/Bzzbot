@@ -122,6 +122,7 @@ def main():
         await client.tree.sync()
         await client.change_presence(
             status=discord.Status.online,
+            activity=discord.Game(name='buttiner des fleurs')
         )
         await asyncio.sleep(2)
 
