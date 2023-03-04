@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  mellifera:
+    image: python:3.11-buster
+    volumes:
+      - .:/app
+    working_dir: /app
+    entrypoint: ./docker-entrypoint.sh
