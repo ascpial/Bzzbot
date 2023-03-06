@@ -8,3 +8,4 @@ fr:
     open-link: "Ouvre le lien et copie la valeur suivante dans le champs `Webhook URL` :"
     edit-link: "Indique ce lien dans le champs `Message Link` en bas si tu veux éditer le message :"
     cannot-edit: Ce message ne semble pas avoir été envoyé par mon webhook et ne peut donc pas être modifié.
+    load-edit: "Pour charger le message, il faut entrer le texte suivant dans `JSON Data Editor`, en bas :"

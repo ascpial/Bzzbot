@@ -8,6 +8,7 @@ de la licence CeCILL diffusée sur le site "http://www.cecill.info".
 from typing import Union
 import base64
 import json
+import io
 
 import discord
 from discord import app_commands
@@ -17,26 +18,43 @@ from utils import Gunibot, MyContext
 DISCOHOOK_BASE_LINK = "https://discohook.org/"
 
 def message_to_dict(message=discord.Message):
-    return {
+    data = {
         "content": message.content,
         "flags": message.flags.value,
         "embeds": [embed.to_dict() for embed in message.embeds] if len(message.embeds) > 0 else None,
     }
+    for embed_data in data["embeds"]:
+        embed_data.pop("type")
+    return data
 
-def discohook_link(
-    message: discord.Message = None,
-):
+def get_discohook_payload(
+    message: discord.Message,
+) -> dict:
     if message is None:
-        content = """{"messages":[{"data":{"content":null,"embeds":null,"attachments":[]}}]}"""
+        return {
+            "messages": [
+                {
+                    "data": {
+                        "content": None,
+                        "embeds": None,
+                        "attachments": [],
+                    }
+                }
+            ]
+        }
     else:
-        raw_content = {
+        return {
             "messages": [
                 {
                     "data": message_to_dict(message),
                 }
             ]
         }
-        content = json.dumps(raw_content)
+
+def discohook_link(
+    message: discord.Message = None,
+):
+    content = json.dumps(get_discohook_payload(message))
     
     return DISCOHOOK_BASE_LINK + "?data=" + base64.urlsafe_b64encode(
         bytes(content, encoding='utf-8')
@@ -111,7 +129,7 @@ class Template(commands.Cog):
 
         await inter.edit_original_response(
             content=await self.bot._(inter.guild.id, 'discohook.open-link')+"\n"\
-                f"||<{webhook_url}>||",
+                f"||<{webhook_url}>||\n",
             view=view,
         )
 
@@ -129,16 +147,31 @@ class Template(commands.Cog):
 
         webhook_url = self.get_webhook_url(webhook, inter.channel)
 
+        link = discohook_link(message)
+
+        if len(link) > 512: # discord limitation
+            edit_message += "\n\n" + await self.bot._(inter.guild.id, 'discohook.load-edit')
+            buffer = io.StringIO()
+            buffer.write(
+                json.dumps(message_to_dict(message))
+            )
+            buffer.seek(0)
+            files = [discord.File(buffer, filename="message-backup.txt")]
+            link = discohook_link()
+        else:
+            files = []
+
         view = discord.ui.View()
         view.add_item(
             discord.ui.Button(
                 label="Discohook",
-                url=discohook_link(message),
+                url=link,
             )
         )
 
         await inter.edit_original_response(
             content=await self.bot._(inter.guild.id, 'discohook.open-link')+"\n"\
-                f"||<{webhook_url}>||\n" + edit_message,
+                f"||<{webhook_url}>||\n\n" + edit_message,
             view=view,
+            attachments=files,
         )
