@@ -94,7 +94,7 @@ class Welcome(commands.Cog):
         roles = [g.get_role(x) for x in rolesID]
         pos = g.me.top_role.position
         roles = filter(lambda x: (x is not None) and (x.position < pos), roles)
-        await member.add_roles(*roles, reason="New members roles")
+        await member.add_roles(*list(roles), reason="New members roles")
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
