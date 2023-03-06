@@ -8,3 +8,4 @@ en:
     open-link: "Open the link and copy the following value in the `Webhook URL` field:"
     edit-link: "Put this link in the field `Message Link` at the bottom to edit the message:"
     cannot-edit: It seems like this message has not been sent by my webhook and cannot be edited.
+    load-edit: "To load the message, enter the following text in `JSON Data Editor` at the bottom:"
