@@ -747,6 +747,14 @@ class XP(commands.Cog):
             round(time.time()),
             prev_points + xp_amount,
         ]
+
+        old_level, _, _ = await self.calc_level(prev_points)
+        level, _, _ = await self.calc_level(prev_points + xp_amount)
+
+        if old_level != level:
+            await self.give_rr(
+                target, level, await self.rr_list_role(target.guild.id)
+            )
         
         await self.rank(ctx, user=target)
     
@@ -774,22 +782,26 @@ class XP(commands.Cog):
                     xp = 0
             except BaseException:
                 xp = 0
-        previous_level, next_level_xp, previous_level_xp = await self.calc_level(xp)
+        
+        original_level, next_level_xp, level_xp = await self.calc_level(xp)
 
-        missing_xp = xp - previous_level_xp
+        missing_xp = xp - level_xp
 
-        level = previous_level
-        while level < previous_level + levels - 1:
-            level, next_level_xp, _ = await self.calc_level(next_level_xp + 1)
+        level = original_level
+        while level < original_level + levels:
+            level, next_level_xp, level_xp = await self.calc_level(next_level_xp + 1)
         
         await self.bdd_set_xp(
-            target.id, next_level_xp + missing_xp, "set", target.guild.id,
+            target.id, level_xp + missing_xp, "set", target.guild.id,
         )
         self.cache.get(target.guild.id)[target.id] = [
             round(time.time()),
-            next_level_xp + missing_xp,
+            level_xp + missing_xp,
         ]
 
+        await self.give_rr(
+            target, level, await self.rr_list_role(target.guild.id)
+        )
         await self.rank(ctx, user=target)
 
     async def rr_add_role(self, guildID: int, roleID: int, level: int):
