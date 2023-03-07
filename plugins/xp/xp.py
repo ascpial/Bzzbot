@@ -752,7 +752,6 @@ class XP(commands.Cog):
         level, _, _ = await self.calc_level(prev_points + xp_amount)
 
         if old_level != level:
-            print("give level")
             await self.give_rr(
                 target, level, await self.rr_list_role(target.guild.id)
             )
@@ -803,7 +802,6 @@ class XP(commands.Cog):
         await self.give_rr(
             target, level, await self.rr_list_role(target.guild.id)
         )
-
         await self.rank(ctx, user=target)
 
     async def rr_add_role(self, guildID: int, roleID: int, level: int):
