@@ -715,6 +715,82 @@ class XP(commands.Cog):
             await ctx.send(embed=emb)
         else:
             await ctx.send(f_name + "\n\n" + "\n".join(txt))
+    
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    async def give_xp(self, ctx: MyContext, target: discord.Member, xp_amount: int):
+        """Ajoute de l'expérience à un utilisateur."""
+        # if xp is disabled
+        if not self.bot.server_configs[ctx.guild.id]["enable_xp"]:
+            return await ctx.send(await self.bot._(ctx.guild.id, "xp.xp-disabled"))
+        # if xp of that guild is not in cache yet
+        if target.guild.id not in self.cache or len(self.cache[target.guild.id]) == 0:
+            await self.bdd_load_cache(target.guild.id)
+        # we check in the cache for the previous xp
+        if target.id in self.cache[target.guild.id].keys():
+            prev_points = self.cache[target.guild.id][target.id][1]
+        else:
+            try:
+                # we check in the database for the previous xp
+                prev_points = await self.bdd_get_xp(target.id, target.guild.id)
+                if len(prev_points) > 0:
+                    prev_points = prev_points[0]["xp"]
+                else:
+                    # if user not in database, it's their first message
+                    prev_points = 0
+            except BaseException:
+                prev_points = 0
+        # we update database with the new xp amount
+        await self.bdd_set_xp(target.id, xp_amount, "add", target.guild.id)
+        # we update cache with the new xp amount
+        self.cache.get(target.guild.id)[target.id] = [
+            round(time.time()),
+            prev_points + xp_amount,
+        ]
+        
+        await self.rank(ctx, user=target)
+    
+    @commands.command()
+    @commands.has_permissions(manage_roles=True)
+    async def give_level(self, ctx: MyContext, target: discord.Member, levels: int):
+        """Ajoute le nombre de niveaux indiqué à l'utilisateur"""
+        # if xp is disabled
+        if not self.bot.server_configs[ctx.guild.id]["enable_xp"]:
+            return await ctx.send(await self.bot._(ctx.guild.id, "xp.xp-disabled"))
+        # if xp of that guild is not in cache yet
+        if target.guild.id not in self.cache or len(self.cache[target.guild.id]) == 0:
+            await self.bdd_load_cache(target.guild.id)
+        # we check in the cache for the previous xp
+        if target.id in self.cache[target.guild.id].keys():
+            xp = self.cache[target.guild.id][target.id][1]
+        else:
+            try:
+                # we check in the database for the previous xp
+                xp = await self.bdd_get_xp(target.id, target.guild.id)
+                if len(xp) > 0:
+                    xp = xp[0]["xp"]
+                else:
+                    # if user not in database, it's their first message
+                    xp = 0
+            except BaseException:
+                xp = 0
+        previous_level, next_level_xp, previous_level_xp = await self.calc_level(xp)
+
+        missing_xp = xp - previous_level_xp
+
+        level = previous_level
+        while level < previous_level + levels - 1:
+            level, next_level_xp, _ = await self.calc_level(next_level_xp + 1)
+        
+        await self.bdd_set_xp(
+            target.id, next_level_xp + missing_xp, "set", target.guild.id,
+        )
+        self.cache.get(target.guild.id)[target.id] = [
+            round(time.time()),
+            next_level_xp + missing_xp,
+        ]
+
+        await self.rank(ctx, user=target)
 
     async def rr_add_role(self, guildID: int, roleID: int, level: int):
         """Add a role reward in the database"""
